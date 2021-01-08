@@ -37,12 +37,25 @@ inline ZIni::ZIni(const char *filePath)
 	std::string mainKey(""), subKey(""), subValue("");
 	std::map<std::string, std::string> subMap;
 	std::string::size_type lastLineBreakIndex;  //记录上一个换行符的位置，为了保证复杂度O(n)，所以遍历到=符号的时候，需要记住该位置，直接取出前面的key值
-	auto i = filestring.find_first_of('[');
+	std::string::size_type firstValidIndex = filestring.find_first_of('['); //第一个'['的位置
+	auto i = firstValidIndex;
 	while (i < filestring.length())
 	{
 		switch (filestring[i])
 		{
 		case '[':
+			//先把上一个mainKey的东西insert进去保存
+			if (mainKey.length() != 0 && subMap.size() != 0)
+			{
+				mainMap.insert({ mainKey, subMap });
+
+
+
+
+				subMap.clear();
+				mainKey.clear();
+			}
+
 			for (auto j = i + 1; j < filestring.length(); ++j)
 			{
 				if (filestring[j] == ']')
@@ -95,8 +108,8 @@ inline ZIni::ZIni(const char *filePath)
 				subValue = std::move(buffer);
 			}
 			subMap.insert({ subKey, subValue });
-			mainMap.insert({ mainKey, subMap });
-			mainKey.clear();
+			//mainMap.insert({ mainKey, subMap });
+			//mainKey.clear();
 			subKey.clear();
 			subValue.clear();
 			break;
