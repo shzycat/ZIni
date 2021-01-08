@@ -96,6 +96,9 @@ inline ZIni::ZIni(const char *filePath)
 			}
 			subMap.insert({ subKey, subValue });
 			mainMap.insert({ mainKey, subMap });
+			mainKey.clear();
+			subKey.clear();
+			subValue.clear();
 			break;
 		}
 
