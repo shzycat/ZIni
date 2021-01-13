@@ -74,6 +74,7 @@ inline ZIni::ZIni(const char *filePath)
 				if (filestring[j] == '\n')
 				{
 					i = j;
+					lastLineBreakIndex = i;
 					break;
 				}
 			}
