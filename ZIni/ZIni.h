@@ -52,8 +52,8 @@ inline ZIni::ZIni(const char *filePath)
 
 
 
-				subMap.clear();
 				mainKey.clear();
+				subMap.clear();
 			}
 
 			for (auto j = i + 1; j < filestring.length(); ++j)
@@ -119,6 +119,10 @@ inline ZIni::ZIni(const char *filePath)
 
 
 		i++;
+	}
+	if (mainKey.length() != 0 && subMap.size() != 0)
+	{
+		mainMap.insert({ mainKey, subMap });
 	}
 
 
