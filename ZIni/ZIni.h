@@ -24,8 +24,6 @@ private:
 	std::map<std::string, std::map<std::string, std::string>> mainMap;
 };
 
-
-
 inline ZIni::ZIni(const char *filePath)
 {
 	std::ifstream fs(filePath);
@@ -55,7 +53,6 @@ inline ZIni::ZIni(const char *filePath)
 				mainKey.clear();
 				subMap.clear();
 			}
-
 			for (auto j = i + 1; j < filestring.length(); ++j)
 			{
 				if (filestring[j] == ']')
@@ -67,7 +64,6 @@ inline ZIni::ZIni(const char *filePath)
 				}
 			}
 			break;
-
 		case ';':
 			for (auto j = i + 1; j < filestring.length(); ++j)
 			{
@@ -79,13 +75,9 @@ inline ZIni::ZIni(const char *filePath)
 				}
 			}
 			break;
-
-
-
 		case '\n':
 			lastLineBreakIndex = i;
 			break;
-
 		case '=':
 			std::string buf(filestring, lastLineBreakIndex + 1, i - lastLineBreakIndex - 1);
 			subKey = std::move(buf);
@@ -115,47 +107,13 @@ inline ZIni::ZIni(const char *filePath)
 			subValue.clear();
 			break;
 		}
-
-
-
-
 		i++;
 	}
 	if (mainKey.length() != 0 && subMap.size() != 0)
 	{
 		mainMap.insert({ mainKey, subMap });
 	}
-
-
-
-
-
-	/*std::string sValue(fstring, lastIndex, curIndex - lastIndex);
-	subValue = std::move(sValue);
-	subMap.insert({ subKey, subValue });
-	mainMap.insert({ mainKey, subMap });*/
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
