@@ -37,10 +37,11 @@ private:
 	std::map<std::string, std::map<std::string, std::string>> mainMap;
 
 private:
-	void removeSpace(std::string &str)
+	std::string::size_type removeSpace(std::string &str)
 	{
-		str.erase(str.find_last_not_of(" \r") + 1); //防止有换行符\r\n遗漏的\r
 		str.erase(0, str.find_first_not_of(" "));
+		str.erase(str.find_last_not_of(" \r") + 1); //防止有换行符\r\n遗漏的\r
+		return str.length();
 	}
 };
 
@@ -63,16 +64,12 @@ inline ZIni::ZIni(const char *filePath)
 		{
 		case '[':
 			//先把上一个mainKey的东西insert进去保存
-			if (mainKey.length() != 0 && subMap.size() != 0)
+			if (removeSpace(mainKey) != 0 && subMap.size() != 0)
 			{
 				mainMap.insert({ mainKey, subMap });
-
-
-
-
-				mainKey.clear();
-				subMap.clear();
 			}
+			mainKey.clear();
+			subMap.clear();
 			for (auto j = i + 1; j < filestring.length(); ++j)
 			{
 				if (filestring[j] == ']')
@@ -120,14 +117,17 @@ inline ZIni::ZIni(const char *filePath)
 				std::string buffer(filestring, i + 1, std::string::npos);
 				subValue = std::move(buffer);
 			}
-			subMap.insert({ subKey, subValue });
+			if ((removeSpace(subKey) != 0) && (removeSpace(subValue) != 0))
+			{
+				subMap.insert({ subKey, subValue });
+			}
 			subKey.clear();
 			subValue.clear();
 			break;
 		}
 		i++;
 	}
-	if (mainKey.length() != 0 && subMap.size() != 0)
+	if (removeSpace(mainKey) != 0 && subMap.size() != 0)
 	{
 		mainMap.insert({ mainKey, subMap });
 	}
