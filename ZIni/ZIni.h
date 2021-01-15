@@ -31,7 +31,40 @@ public:
 	virtual ~ZIni() {};
 public:
 	template<typename T>
-	T get(const char *mainKey, const char *subKey);
+	T get(const char *mainKey, const char *subKey, T defaultValue)
+	{
+		if (mainMap.count(mainKey) == 0)
+		{
+			return defaultValue;
+		}
+		if ((*(mainMap.find(mainKey))).second.count(subKey) == 0)
+		{
+			return defaultValue;
+		}
+		std::string strTemp = (*(((*(mainMap.find(mainKey))).second).find(subKey))).second;
+		std::stringstream ss(strTemp);
+		T returnValue;
+		ss >> returnValue;
+		return returnValue;
+	}
+
+	template<typename T>
+	T get(const char *mainKey, const char *subKey)
+	{
+		if (mainMap.count(mainKey) == 0)
+		{
+			return 0;
+		}
+		if ((*(mainMap.find(mainKey))).second.count(subKey) == 0)
+		{
+			return 0;
+		}
+		std::string strTemp = (*(((*(mainMap.find(mainKey))).second).find(subKey))).second;
+		std::stringstream ss(strTemp);
+		T returnValue;
+		ss >> returnValue;
+		return returnValue;
+	}
 
 private:
 	std::map<std::string, std::map<std::string, std::string>> mainMap;
