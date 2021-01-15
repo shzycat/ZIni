@@ -35,6 +35,13 @@ public:
 
 private:
 	std::map<std::string, std::map<std::string, std::string>> mainMap;
+
+private:
+	void removeSpace(std::string &str)
+	{
+		str.erase(str.find_last_not_of(" \r") + 1); //·ÀÖ¹ÓĞ»»ĞĞ·û\r\nÒÅÂ©µÄ\r
+		str.erase(0, str.find_first_not_of(" "));
+	}
 };
 
 inline ZIni::ZIni(const char *filePath)
@@ -114,8 +121,6 @@ inline ZIni::ZIni(const char *filePath)
 				subValue = std::move(buffer);
 			}
 			subMap.insert({ subKey, subValue });
-			//mainMap.insert({ mainKey, subMap });
-			//mainKey.clear();
 			subKey.clear();
 			subValue.clear();
 			break;
