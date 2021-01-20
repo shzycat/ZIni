@@ -19,15 +19,13 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <stdio.h>
 #include "stdafx.h"
 
 class ZIni
 {
 public:
-	// 构造函数
 	explicit ZIni(const char *filePath);
-
-	// 析够函数
 	virtual ~ZIni() {};
 public:
 	template<typename T>
@@ -48,26 +46,51 @@ public:
 		return returnValue;
 	}
 
-	template<typename T>
-	T get(const char *mainKey, const char *subKey)
+	std::string get(const char *mainKey, const char *subKey, const char *defaultCStr = "")
 	{
 		if (mainMap.count(mainKey) == 0)
 		{
-			return 0;
+			return defaultCStr;
 		}
 		if ((*(mainMap.find(mainKey))).second.count(subKey) == 0)
 		{
-			return 0;
+			return defaultCStr;
 		}
-		std::string strTemp = (*(((*(mainMap.find(mainKey))).second).find(subKey))).second;
-		std::stringstream ss(strTemp);
-		T returnValue;
-		ss >> returnValue;
-		return returnValue;
+		std::string subValue = (*(((*(mainMap.find(mainKey))).second).find(subKey))).second;
+		return std::move(subValue);
 	}
 
+	std::string get(const char *mainKey, const char *subKey, char *defaultCStr)
+	{
+		if (mainMap.count(mainKey) == 0)
+		{
+			return defaultCStr;
+		}
+		if ((*(mainMap.find(mainKey))).second.count(subKey) == 0)
+		{
+			return defaultCStr;
+		}
+		std::string subValue = (*(((*(mainMap.find(mainKey))).second).find(subKey))).second;
+		return std::move(subValue);
+	}
+
+	std::map<std::string, std::string> & operator[] (std::string mainKey)
+	{
+		if (mainMap.count(mainKey) == 0)
+		{
+			return emptyMap;
+		}
+		return mainMap[mainKey];
+	}
+
+	bool is_open()
+	{
+		return b_open;
+	}
 private:
 	std::map<std::string, std::map<std::string, std::string>> mainMap;
+	std::map<std::string, std::string> emptyMap;
+	bool b_open = false;
 
 private:
 	std::string::size_type removeSpace(std::string &str)
@@ -80,12 +103,18 @@ private:
 
 inline ZIni::ZIni(const char *filePath)
 {
-	std::ifstream fs(filePath);
-	std::stringstream ss;
-	ss << fs.rdbuf();
-	std::string filestring(ss.str()); //直接从文件读出来的string
+	FILE *fp = fopen(filePath, "rb");
+	if (fp)  b_open = true;
+	fseek(fp, 0, SEEK_END);
+	int sizeOfBytes = ftell(fp);
+	rewind(fp);
+	char *buffer = new char[sizeOfBytes];
+	fread(buffer, 1, sizeOfBytes, fp);
+	fclose(fp);
+	std::string filestring(buffer); //直接从文件读出来的string
+	delete[] buffer;
 
-	//开始遍历该文件所有的字符串，争取只遍历一次
+	//开始遍历该文件所有的字符串
 	std::string mainKey(""), subKey(""), subValue("");
 	std::map<std::string, std::string> subMap;
 	std::string::size_type lastLineBreakIndex;  //记录上一个换行符的位置，为了保证复杂度O(n)，所以遍历到=符号的时候，需要记住该位置，直接取出前面的key值

@@ -8,7 +8,9 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	ZIni ini("F:\\abc.ini");
 
-	std::string  ss = ini.get<std::string>("xxx", "yyy");
+	std::string  ss = ini["xxxxx"]["test_record_rootdir"];
+
+	printf("%d\n", ss.length());
 	printf("%s\n", ss.c_str());
 
 	system("pause");
