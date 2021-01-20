@@ -31,15 +31,17 @@ public:
 	template<typename T>
 	T get(const char *mainKey, const char *subKey, T defaultValue)
 	{
-		if (mainMap.count(mainKey) == 0)
+		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
+		std::map<std::string, std::string>::iterator subIter;
+		if ((mainIter = mainMap.find(mainKey)) == mainMap.end())
 		{
 			return defaultValue;
 		}
-		if ((*(mainMap.find(mainKey))).second.count(subKey) == 0)
+		if ((subIter = (*mainIter).second.find(subKey)) == (*mainIter).second.end())
 		{
 			return defaultValue;
 		}
-		std::string strTemp = (*(((*(mainMap.find(mainKey))).second).find(subKey))).second;
+		std::string strTemp = (*subIter).second;
 		std::stringstream ss(strTemp);
 		T returnValue;
 		ss >> returnValue;
@@ -48,30 +50,22 @@ public:
 
 	std::string get(const char *mainKey, const char *subKey, const char *defaultCStr = "")
 	{
-		if (mainMap.count(mainKey) == 0)
+		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
+		std::map<std::string, std::string>::iterator subIter;
+		if ((mainIter = mainMap.find(mainKey)) == mainMap.end())
 		{
 			return defaultCStr;
 		}
-		if ((*(mainMap.find(mainKey))).second.count(subKey) == 0)
+		if ((subIter = (*mainIter).second.find(subKey)) == (*mainIter).second.end())
 		{
 			return defaultCStr;
 		}
-		std::string subValue = (*(((*(mainMap.find(mainKey))).second).find(subKey))).second;
-		return std::move(subValue);
+		return (*subIter).second;
 	}
 
 	std::string get(const char *mainKey, const char *subKey, char *defaultCStr)
 	{
-		if (mainMap.count(mainKey) == 0)
-		{
-			return defaultCStr;
-		}
-		if ((*(mainMap.find(mainKey))).second.count(subKey) == 0)
-		{
-			return defaultCStr;
-		}
-		std::string subValue = (*(((*(mainMap.find(mainKey))).second).find(subKey))).second;
-		return std::move(subValue);
+		return get(mainKey, subKey, std::string(defaultCStr));
 	}
 
 	std::map<std::string, std::string> & operator[] (std::string mainKey)
