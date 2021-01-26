@@ -81,6 +81,40 @@ public:
 	{
 		return b_open;
 	}
+
+	bool set(const char *mainKey, const char *subKey, const char *str)
+	{
+		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
+		std::map<std::string, std::string>::iterator subIter;
+		bool mainKeyExist = ((mainIter = mainMap.find(mainKey)) != mainMap.end());
+		bool subKeyExist = mainKeyExist ? ((subIter = ((*mainIter).second.find(subKey))) != ((*mainIter).second.end())) : false;
+
+		if (!mainKeyExist)
+		{
+			std::map<std::string, std::string> subMap;
+			subMap.insert({ subKey, str });
+			mainMap.insert({ mainKey, subMap });
+			std::string buffer("[");
+			buffer.reserve(128);
+			buffer += mainKey; buffer += ']\n'; buffer += subKey; buffer += ' = '; buffer += str;
+			filestring += buffer;
+		}
+		else
+		{
+			if (subKeyExist)
+			{
+				(*subIter).second = str;
+			}
+			else
+			{
+				(*mainIter).second.insert({ subKey, str });
+			}
+		}
+
+
+
+	}
+
 private:
 	std::string filestring;
 	std::map<std::string, std::map<std::string, std::string>> mainMap;
@@ -103,6 +137,7 @@ inline ZIni::ZIni(const char *filePath)
 	fseek(fp, 0, SEEK_END);
 	int sizeOfBytes = ftell(fp);
 	rewind(fp);
+	filestring.reserve(sizeOfBytes * 2);   //prepare for the write member function.(avoid memory alloc)
 	filestring.resize(sizeOfBytes);
 	fread((void *)filestring.c_str(), 1, sizeOfBytes, fp);  //C++11 only
 	fclose(fp);
