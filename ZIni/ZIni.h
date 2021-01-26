@@ -82,6 +82,7 @@ public:
 		return b_open;
 	}
 private:
+	std::string filestring;
 	std::map<std::string, std::map<std::string, std::string>> mainMap;
 	std::map<std::string, std::string> emptyMap;
 	bool b_open = false;
@@ -102,11 +103,9 @@ inline ZIni::ZIni(const char *filePath)
 	fseek(fp, 0, SEEK_END);
 	int sizeOfBytes = ftell(fp);
 	rewind(fp);
-	char *buffer = new char[sizeOfBytes];
-	fread(buffer, 1, sizeOfBytes, fp);
+	filestring.resize(sizeOfBytes);
+	fread((void *)filestring.c_str(), 1, sizeOfBytes, fp);  //C++11 only
 	fclose(fp);
-	std::string filestring(buffer); //直接从文件读出来的string
-	delete[] buffer;
 
 	//开始遍历该文件所有的字符串
 	std::string mainKey(""), subKey(""), subValue("");

@@ -6,7 +6,7 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	ZIni ini("F:\\abc.ini");
+	ZIni ini("e:\\abc.ini");
 
 	std::string  ss = ini["Store_Info"]["test_record_rootdir"];
 
