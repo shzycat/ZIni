@@ -8,10 +8,10 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	ZIni ini("e:\\abc.ini");
 
-	std::string  ss = ini["Store_Info"]["test_record_rootdir"];
+	ini.set("xxxx", "yyyy", "zzzz");
 
-	printf("%d\n", ss.length());
-	printf("%s\n", ss.c_str());
+	//printf("%d\n", ss.length());
+	//printf("%s\n", ss.c_str());
 
 	system("pause");
 	return 0;

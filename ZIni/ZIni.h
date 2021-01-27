@@ -140,7 +140,7 @@ public:
 				filestring.insert(writeIndex + 1, buffer);
 			}
 		}
-		writeIntoFile();
+		return writeIntoFile();
 	}
 
 private:
@@ -163,12 +163,13 @@ private:
 		return '=' == filestring[filestring.find_first_not_of(' ', index)];
 	}
 
-	void writeIntoFile()
+	bool writeIntoFile()
 	{
 		FILE *fp = fopen(filepath.c_str(), "wb");
-		if (!fp) return;
+		if (!fp) return false;
 		fwrite(filestring.c_str(), 1, filestring.length(), fp);
 		fclose(fp);
+		return true;
 	}
 };
 
