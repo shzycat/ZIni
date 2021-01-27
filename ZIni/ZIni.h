@@ -124,7 +124,8 @@ public:
 				}
 				else
 				{
-
+					buffer = subKey; buffer += " = "; buffer += subValue;
+					filestring.replace(lineBeginIndex, filestring.length() - lineBeginIndex, buffer);
 				}
 			}
 			else
