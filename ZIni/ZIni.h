@@ -95,7 +95,7 @@ public:
 			std::map<std::string, std::string> subMap;
 			subMap.insert({ subKey, subValue });
 			mainMap.insert({ mainKey, subMap });
-			std::string buffer("[");
+			std::string buffer("\n[");
 			buffer.reserve(128);
 			buffer += mainKey; buffer += "]\n"; buffer += subKey; buffer += " = "; buffer += subValue;
 			filestring += buffer;
