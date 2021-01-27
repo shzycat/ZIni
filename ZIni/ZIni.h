@@ -136,7 +136,7 @@ public:
 				buffer += mainKey; buffer += ']';
 				auto mainKeyIndex = filestring.find(buffer);
 				auto writeIndex = filestring.find('\n', mainKeyIndex);
-				buffer = subKey; buffer += " = "; buffer += subValue;
+				buffer = subKey; buffer += " = "; buffer += subValue; buffer += '\n';
 				filestring.insert(writeIndex + 1, buffer);
 			}
 		}
