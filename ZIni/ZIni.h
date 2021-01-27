@@ -85,6 +85,7 @@ public:
 
 	bool set(const char *mainKey, const char *subKey, const char *subValue)
 	{
+		if (!b_open) return false;
 		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
 		std::map<std::string, std::string>::iterator subIter;
 		bool mainKeyExist = ((mainIter = mainMap.find(mainKey)) != mainMap.end());
