@@ -19,6 +19,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <string.h>
 #include <stdio.h>
 #include "stdafx.h"
 
@@ -82,7 +83,7 @@ public:
 		return b_open;
 	}
 
-	bool set(const char *mainKey, const char *subKey, const char *str)
+	bool set(const char *mainKey, const char *subKey, const char *subValue)
 	{
 		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
 		std::map<std::string, std::string>::iterator subIter;
@@ -92,30 +93,57 @@ public:
 		if (!mainKeyExist)
 		{
 			std::map<std::string, std::string> subMap;
-			subMap.insert({ subKey, str });
+			subMap.insert({ subKey, subValue });
 			mainMap.insert({ mainKey, subMap });
 			std::string buffer("[");
 			buffer.reserve(128);
-			buffer += mainKey; buffer += ']\n'; buffer += subKey; buffer += ' = '; buffer += str;
+			buffer += mainKey; buffer += "]\n"; buffer += subKey; buffer += " = "; buffer += subValue;
 			filestring += buffer;
 		}
 		else
 		{
 			if (subKeyExist)
 			{
-				(*subIter).second = str;
+				(*subIter).second = subValue;
+				std::string buffer("[");
+				buffer.reserve(128);
+				buffer += mainKey; buffer += ']';
+				auto lineBeginIndex = filestring.find(subKey, filestring.find(buffer));
+				//check if the index is valid, because there may be a value which is the same as the key.
+				while (lineBeginIndex != std::string::npos)
+				{
+					if (isSubKeyIndexValid(lineBeginIndex + strlen(subKey)))
+						break;
+					lineBeginIndex = filestring.find(subKey, lineBeginIndex);
+				}
+				auto lineEndIndex = filestring.find('\n', lineBeginIndex);
+				if (lineEndIndex != std::string::npos)    //did not reach the end-of-file
+				{
+					buffer = subKey; buffer += " = "; buffer += subValue;
+					filestring.replace(lineBeginIndex, lineEndIndex - lineBeginIndex, buffer);
+				}
+				else
+				{
+
+				}
 			}
 			else
 			{
-				(*mainIter).second.insert({ subKey, str });
+				(*mainIter).second.insert({ subKey, subValue });
+				std::string buffer("[");
+				buffer.reserve(128);
+				buffer += mainKey; buffer += ']';
+				auto mainKeyIndex = filestring.find(buffer);
+				auto writeIndex = filestring.find('\n', mainKeyIndex);
+				buffer = subKey; buffer += " = "; buffer += subValue;
+				filestring.insert(writeIndex + 1, buffer);
 			}
 		}
-
-
-
+		writeIntoFile();
 	}
 
 private:
+	std::string filepath;
 	std::string filestring;
 	std::map<std::string, std::map<std::string, std::string>> mainMap;
 	std::map<std::string, std::string> emptyMap;
@@ -128,12 +156,29 @@ private:
 		str.erase(str.find_last_not_of(" \r") + 1); //防止有换行符\r\n遗漏的\r
 		return str.length();
 	}
+
+	bool isSubKeyIndexValid(unsigned int index)
+	{
+		return '=' == filestring[filestring.find_first_not_of(' ', index)];
+	}
+
+	void writeIntoFile()
+	{
+		FILE *fp = fopen(filepath.c_str(), "wb");
+		if (!fp) return;
+		fwrite(filestring.c_str(), 1, filestring.length(), fp);
+		fclose(fp);
+	}
 };
 
 inline ZIni::ZIni(const char *filePath)
 {
 	FILE *fp = fopen(filePath, "rb");
-	if (fp)  b_open = true;
+	if (fp)
+	{
+		b_open = true;
+		filepath = filePath;
+	}
 	fseek(fp, 0, SEEK_END);
 	int sizeOfBytes = ftell(fp);
 	rewind(fp);
@@ -145,7 +190,7 @@ inline ZIni::ZIni(const char *filePath)
 	//开始遍历该文件所有的字符串
 	std::string mainKey(""), subKey(""), subValue("");
 	std::map<std::string, std::string> subMap;
-	std::string::size_type lastLineBreakIndex;  //记录上一个换行符的位置，为了保证复杂度O(n)，所以遍历到=符号的时候，需要记住该位置，直接取出前面的key值
+	std::string::size_type lastLineBreakIndex;  //记录上一个换行符的位置，为了效率，保证只遍历一次，所以遍历到=符号的时候，需要记住该位置，直接取出前面的key值
 	std::string::size_type firstValidIndex = filestring.find_first_of('['); //第一个'['的位置
 	auto i = firstValidIndex;
 	while (i < filestring.length())
