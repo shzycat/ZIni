@@ -190,7 +190,7 @@ public:
 
 	void enableFastMode()
 	{
-		filestring.reserve((filestring.length()) * 2);
+		filestring.reserve((filestring.capacity()) * 2);
 		fastMode = true;
 	}
 	bool update()
