@@ -195,7 +195,7 @@ private:
 	std::string::size_type removeSpace(std::string &str)
 	{
 		str.erase(0, str.find_first_not_of(" "));
-		str.erase(str.find_last_not_of(" \r") + 1); //防止有换行符\r\n遗漏的\r
+		str.erase(str.find_last_not_of(" \r") + 1); //in case there is a '\r' left in the end-line.
 		return str.length();
 	}
 	bool isSubKeyIndexValid(unsigned int index)
@@ -228,18 +228,17 @@ inline ZIni::ZIni(const char *filePath)
 	fread((void *)filestring.c_str(), 1, sizeOfBytes, fp);  //C++11 only
 	fclose(fp);
 
-	//开始遍历该文件所有的字符串
 	std::string mainKey(""), subKey(""), subValue("");
 	std::map<std::string, std::string> subMap;
-	std::string::size_type lastLineBreakIndex;  //记录上一个换行符的位置，为了效率，保证只遍历一次，所以遍历到=符号的时候，需要记住该位置，直接取出前面的key值
-	std::string::size_type firstValidIndex = filestring.find_first_of('['); //第一个'['的位置
+	std::string::size_type lastLineBreakIndex;  //record the last linebreak position，for traversal only once. when reaching a '=', get the keyname directly by using this index.
+	std::string::size_type firstValidIndex = filestring.find_first_of('[');
 	auto i = firstValidIndex;
 	while (i < filestring.length())
 	{
 		switch (filestring[i])
 		{
 		case '[':
-			//先把上一个mainKey的东西insert进去保存
+			//take last section's content before this section into the map.
 			if (removeSpace(mainKey) != 0 && subMap.size() != 0)
 			{
 				mainMap.insert({ mainKey, subMap });
@@ -252,7 +251,7 @@ inline ZIni::ZIni(const char *filePath)
 				{
 					std::string buf(filestring, i + 1, j - i - 1);
 					mainKey = std::move(buf);
-					i = j; //直接让索引i跳到该闭方括号的位置，之后i++接着遍历']'后面的字符
+					i = j;  //make the index(i) jump to the ']' position.
 					break;
 				}
 			}
@@ -274,7 +273,7 @@ inline ZIni::ZIni(const char *filePath)
 		case '=':
 			std::string buf(filestring, lastLineBreakIndex + 1, i - lastLineBreakIndex - 1);
 			subKey = std::move(buf);
-			bool isLastLine = true; //是否为最后一行。实际上就算此变量为false，也不能保证这一定不是最后一行（可能文件末尾有个\n），他只作为一个flag，看下面的for循环是否进入了其中的if语句
+			bool isLastLine = true; //tell if reaching the last line of this file.(note: even if this value is false, doesn't mean this line is definitely not the last line)
 			for (auto j = i + 1; j < filestring.length(); ++j)
 			{
 				if (filestring[j] == '\n')
@@ -289,7 +288,6 @@ inline ZIni::ZIni(const char *filePath)
 			}
 			if (isLastLine)
 			{
-				//如果该for循环完了之后，都没有找到'\n'，那么这行就是文件末尾了，那就把'='号之后的全部当成subValue
 				std::string buffer(filestring, i + 1, std::string::npos);
 				subValue = std::move(buffer);
 			}
