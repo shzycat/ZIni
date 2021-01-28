@@ -1,9 +1,9 @@
 /*  ZIni: A Real Crude Cross-Platform Ini-File-Reader Written by C++
 *
-*   version  :  v0.0.1
+*   version  :  v0.1.0
 *   Author   :  SHZY
 *   Email    :  188813950@qq.com
-*   now-time :  2021-1-13
+*   now-time :  2021-1-28
 *
 ***************************************
 *
@@ -20,7 +20,6 @@
 #include <iostream>
 #include <string.h>
 #include <stdio.h>
-#include "stdafx.h"
 
 class ZIni
 {
