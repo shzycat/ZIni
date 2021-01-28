@@ -7,9 +7,13 @@
 int _tmain(int argc, _TCHAR* argv[])
 {
 	ZIni ini("e:\\abc.ini");
+	ini.enableFastMode();
 
-	double dnumber = ini.getDouble("xxxx", "yyyy", 1.5);
-	printf("%s\n", ini["xxxx"]["yyyy"].c_str());
+	
+	printf("%s\n", ini.get("xxxx", "yyyy").c_str());
+
+	ini.set("xxxx", "yyyy", "55555");
+	printf("%s\n", ini.get("xxxx", "yyyy").c_str());
 	//printf("%d\n", ss.length());
 	//printf("%s\n", ss.c_str());
 

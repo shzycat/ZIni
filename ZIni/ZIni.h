@@ -24,7 +24,7 @@ class ZIni
 {
 public:
 	explicit ZIni(const char *filePath);
-	virtual ~ZIni() {};
+	virtual ~ZIni() { update(); };
 public:
 	int getInt(const char *mainKey, const char *subKey, int defaultValue = 0)
 	{
@@ -180,6 +180,23 @@ public:
 				filestring.insert(writeIndex + 1, buffer);
 			}
 		}
+		if (fastMode)
+		{
+			needWrite = true;
+			return true;
+		}
+		return writeIntoFile();
+	}
+
+	void enableFastMode()
+	{
+		filestring.reserve((filestring.length()) * 2);
+		fastMode = true;
+	}
+	bool update()
+	{
+		if (!needWrite)
+			return true;
 		return writeIntoFile();
 	}
 
@@ -189,6 +206,8 @@ private:
 	std::map<std::string, std::map<std::string, std::string>> mainMap;
 	std::map<std::string, std::string> emptyMap;
 	bool b_open = false;
+	bool fastMode = false;
+	bool needWrite = false;
 
 private:
 	std::string::size_type removeSpace(std::string &str)
@@ -207,6 +226,7 @@ private:
 		if (!fp) return false;
 		fwrite(filestring.c_str(), 1, filestring.length(), fp);
 		fclose(fp);
+		needWrite = false;
 		return true;
 	}
 };
