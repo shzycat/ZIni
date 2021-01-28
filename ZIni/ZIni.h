@@ -42,7 +42,34 @@ public:
 		}
 		return std::stoi((*subIter).second);
 	}
-
+	unsigned long getUl(const char *mainKey, const char *subKey, unsigned long defaultValue = 0)
+	{
+		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
+		std::map<std::string, std::string>::iterator subIter;
+		if ((mainIter = mainMap.find(mainKey)) == mainMap.end())
+		{
+			return defaultValue;
+		}
+		if ((subIter = (*mainIter).second.find(subKey)) == (*mainIter).second.end())
+		{
+			return defaultValue;
+		}
+		return std::stoul((*subIter).second);
+	}
+	unsigned long long getUll(const char *mainKey, const char *subKey, unsigned long long defaultValue = 0)
+	{
+		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
+		std::map<std::string, std::string>::iterator subIter;
+		if ((mainIter = mainMap.find(mainKey)) == mainMap.end())
+		{
+			return defaultValue;
+		}
+		if ((subIter = (*mainIter).second.find(subKey)) == (*mainIter).second.end())
+		{
+			return defaultValue;
+		}
+		return std::stoull((*subIter).second);
+	}
 	float getFloat(const char *mainKey, const char *subKey, float defaultValue = 0.0f)
 	{
 		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
@@ -57,7 +84,6 @@ public:
 		}
 		return std::stof((*subIter).second);
 	}
-	
 	double getDouble(const char *mainKey, const char *subKey, double defaultValue = 0.0)
 	{
 		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
@@ -72,7 +98,6 @@ public:
 		}
 		return std::stod((*subIter).second);
 	}
-
 	std::string get(const char *mainKey, const char *subKey, const char *defaultCStr = "")
 	{
 		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
@@ -87,7 +112,6 @@ public:
 		}
 		return (*subIter).second;
 	}
-
 	std::map<std::string, std::string> & operator[] (std::string mainKey)
 	{
 		if (mainMap.count(mainKey) == 0)
@@ -96,12 +120,10 @@ public:
 		}
 		return mainMap[mainKey];
 	}
-
 	bool is_open()
 	{
 		return b_open;
 	}
-
 	bool set(const char *mainKey, const char *subKey, const char *subValue)
 	{
 		if (!b_open) return false;
@@ -177,12 +199,10 @@ private:
 		str.erase(str.find_last_not_of(" \r") + 1); //·ÀÖ¹ÓÐ»»ÐÐ·û\r\nÒÅÂ©µÄ\r
 		return str.length();
 	}
-
 	bool isSubKeyIndexValid(unsigned int index)
 	{
 		return '=' == filestring[filestring.find_first_not_of(' ', index)];
 	}
-
 	bool writeIntoFile()
 	{
 		FILE *fp = fopen(filepath.c_str(), "wb");
