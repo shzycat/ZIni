@@ -17,7 +17,6 @@
 #include <fstream>
 #include <map>
 #include <string>
-#include <sstream>
 #include <iostream>
 #include <string.h>
 #include <stdio.h>
@@ -29,8 +28,7 @@ public:
 	explicit ZIni(const char *filePath);
 	virtual ~ZIni() {};
 public:
-	template<typename T>
-	T get(const char *mainKey, const char *subKey, T defaultValue)
+	int getInt(const char *mainKey, const char *subKey, int defaultValue = 0)
 	{
 		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
 		std::map<std::string, std::string>::iterator subIter;
@@ -42,11 +40,37 @@ public:
 		{
 			return defaultValue;
 		}
-		std::string strTemp = (*subIter).second;
-		std::stringstream ss(strTemp);
-		T returnValue;
-		ss >> returnValue;
-		return returnValue;
+		return std::stoi((*subIter).second);
+	}
+
+	float getFloat(const char *mainKey, const char *subKey, float defaultValue = 0.0f)
+	{
+		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
+		std::map<std::string, std::string>::iterator subIter;
+		if ((mainIter = mainMap.find(mainKey)) == mainMap.end())
+		{
+			return defaultValue;
+		}
+		if ((subIter = (*mainIter).second.find(subKey)) == (*mainIter).second.end())
+		{
+			return defaultValue;
+		}
+		return std::stof((*subIter).second);
+	}
+	
+	double getDouble(const char *mainKey, const char *subKey, double defaultValue = 0.0)
+	{
+		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
+		std::map<std::string, std::string>::iterator subIter;
+		if ((mainIter = mainMap.find(mainKey)) == mainMap.end())
+		{
+			return defaultValue;
+		}
+		if ((subIter = (*mainIter).second.find(subKey)) == (*mainIter).second.end())
+		{
+			return defaultValue;
+		}
+		return std::stod((*subIter).second);
 	}
 
 	std::string get(const char *mainKey, const char *subKey, const char *defaultCStr = "")
@@ -62,11 +86,6 @@ public:
 			return defaultCStr;
 		}
 		return (*subIter).second;
-	}
-
-	std::string get(const char *mainKey, const char *subKey, char *defaultCStr)
-	{
-		return get(mainKey, subKey, std::string(defaultCStr));
 	}
 
 	std::map<std::string, std::string> & operator[] (std::string mainKey)
