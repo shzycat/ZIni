@@ -40,6 +40,20 @@ public:
 		}
 		return std::stoi((*subIter).second);
 	}
+	long long getLl(const char *mainKey, const char *subKey, long long defaultValue = 0)
+	{
+		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
+		std::map<std::string, std::string>::iterator subIter;
+		if ((mainIter = mainMap.find(mainKey)) == mainMap.end())
+		{
+			return defaultValue;
+		}
+		if ((subIter = (*mainIter).second.find(subKey)) == (*mainIter).second.end())
+		{
+			return defaultValue;
+		}
+		return std::stoll((*subIter).second);
+	}
 	unsigned long getUl(const char *mainKey, const char *subKey, unsigned long defaultValue = 0)
 	{
 		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
