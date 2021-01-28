@@ -9,7 +9,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	ZIni ini("e:\\abc.ini");
 
 	
-	ini.remove("xxxx");
+	ini.remove("xxxx","2");
 	//printf("%d\n", ss.length());
 	//printf("%s\n", ss.c_str());
 

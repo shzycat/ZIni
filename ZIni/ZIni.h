@@ -211,8 +211,10 @@ public:
 		if (subKey)
 		{
 			subKeyExist = mainKeyExist ? ((subIter = ((*mainIter).second.find(subKey))) != ((*mainIter).second.end())) : false;
+			if (!subKeyExist)  //it's a uncorrect parameter;
+				return false;
 		}
-		if (!mainKeyExist)
+		if (!mainKeyExist)     //it's a uncorrect parameter;
 		{
 			return false;
 		}
