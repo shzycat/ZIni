@@ -14,7 +14,6 @@
 #ifndef __INI_H__
 #define __INI_H__
 
-#include <fstream>
 #include <map>
 #include <string>
 #include <iostream>
