@@ -201,7 +201,72 @@ public:
 		}
 		return writeIntoFile();
 	}
-
+	bool remove(const char *mainKey, const char *subKey = NULL)
+	{
+		if (!b_open) return false;
+		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
+		std::map<std::string, std::string>::iterator subIter;
+		bool mainKeyExist = ((mainIter = mainMap.find(mainKey)) != mainMap.end());
+		bool subKeyExist = false;
+		if (subKey)
+		{
+			subKeyExist = mainKeyExist ? ((subIter = ((*mainIter).second.find(subKey))) != ((*mainIter).second.end())) : false;
+		}
+		if (!mainKeyExist)
+		{
+			return false;
+		}
+		else
+		{
+			if (subKeyExist)
+			{
+				(*mainIter).second.erase(subIter);
+				std::string buffer("[");
+				buffer.reserve(128);
+				buffer += mainKey; buffer += ']';
+				auto lineBeginIndex = filestring.find(subKey, filestring.find(buffer));
+				//check if the index is valid, because there may be a value which is the same as the key.
+				while (lineBeginIndex != std::string::npos)
+				{
+					if (isSubKeyIndexValid(lineBeginIndex + strlen(subKey)))
+						break;
+					lineBeginIndex = filestring.find(subKey, lineBeginIndex);
+				}
+				auto lineEndIndex = filestring.find('\n', lineBeginIndex);
+				if (lineEndIndex != std::string::npos)    //did not reach the end-of-file
+				{
+					filestring.erase(lineBeginIndex, lineEndIndex - lineBeginIndex + 1);
+				}
+				else
+				{
+					filestring.erase(lineBeginIndex, filestring.length() - lineBeginIndex);
+				}
+			}
+			else
+			{
+				mainMap.erase(mainIter);
+				std::string buffer("[");
+				buffer.reserve(128);
+				buffer += mainKey; buffer += ']';
+				auto mainKeyIndex = filestring.find(buffer);
+				auto endIndex = filestring.find("\n[", mainKeyIndex);
+				if (endIndex != std::string::npos)    //did not reach the end-of-file
+				{
+					filestring.erase(mainKeyIndex, endIndex - mainKeyIndex + 1);
+				}
+				else
+				{
+					filestring.erase(mainKeyIndex, filestring.length() - mainKeyIndex);
+				}
+			}
+		}
+		if (fastMode)
+		{
+			needWrite = true;
+			return true;
+		}
+		return writeIntoFile();
+	}
 	void enableFastMode()
 	{
 		filestring.reserve((filestring.capacity()) * 2);
