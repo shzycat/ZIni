@@ -126,11 +126,12 @@ public:
 	}
 	std::map<std::string, std::string> & operator[] (std::string mainKey)
 	{
-		if (mainMap.count(mainKey) == 0)
+		auto iter = mainMap.find(mainKey);
+		if (iter == mainMap.end())
 		{
 			return emptyMap;
 		}
-		return mainMap[mainKey];
+		return (*iter).second;
 	}
 	bool is_open()
 	{
