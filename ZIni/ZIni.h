@@ -1,9 +1,9 @@
 /*  ZIni: A Real Crude Cross-Platform Ini-File-Reader Written by C++
 *
-*   version  :  v0.1.0
+*   version  :  v0.1.1
 *   Author   :  SHZY
 *   Email    :  188813950@qq.com
-*   now-time :  2021-1-28
+*   now-time :  2022-2-23
 *
 ***************************************
 *
@@ -124,7 +124,7 @@ public:
 		}
 		return (*subIter).second;
 	}
-	std::map<std::string, std::string> & operator[] (std::string mainKey)
+	std::map<std::string, std::string>& operator[](std::string mainKey)
 	{
 		auto iter = mainMap.find(mainKey);
 		if (iter == mainMap.end())
@@ -133,13 +133,21 @@ public:
 		}
 		return (*iter).second;
 	}
+	bool operator!()
+	{
+		return !m_bOpen;
+	}
+	explicit operator bool()
+	{
+		return m_bOpen;
+	}
 	bool is_open()
 	{
-		return b_open;
+		return m_bOpen;
 	}
 	bool set(const char *mainKey, const char *subKey, const char *subValue)
 	{
-		if (!b_open) return false;
+		if (!m_bOpen) return false;
 		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
 		std::map<std::string, std::string>::iterator subIter;
 		bool mainKeyExist = ((mainIter = mainMap.find(mainKey)) != mainMap.end());
@@ -204,7 +212,7 @@ public:
 	}
 	bool remove(const char *mainKey, const char *subKey = NULL)
 	{
-		if (!b_open) return false;
+		if (!m_bOpen) return false;
 		std::map<std::string, std::map<std::string, std::string>>::iterator mainIter;;
 		std::map<std::string, std::string>::iterator subIter;
 		bool mainKeyExist = ((mainIter = mainMap.find(mainKey)) != mainMap.end());
@@ -287,7 +295,7 @@ private:
 	std::string filestring;
 	std::map<std::string, std::map<std::string, std::string>> mainMap;
 	std::map<std::string, std::string> emptyMap;
-	bool b_open = false;
+	bool m_bOpen = false;
 	bool fastMode = false;
 	bool needWrite = false;
 
@@ -316,11 +324,13 @@ private:
 inline ZIni::ZIni(const char *filePath)
 {
 	FILE *fp = fopen(filePath, "rb");
-	if (fp)
+	if (!fp)
 	{
-		b_open = true;
-		filepath = filePath;
+		return;
 	}
+	m_bOpen = true;
+	filepath = filePath;
+
 	fseek(fp, 0, SEEK_END);
 	int sizeOfBytes = ftell(fp);
 	rewind(fp);
