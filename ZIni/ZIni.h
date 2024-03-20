@@ -2,7 +2,7 @@
 *
 *   version  :  v0.1.1
 *   Author   :  SHZY
-*   Email    :  188813950@qq.com
+*   Email    :  1816030@qq.com
 *   now-time :  2022-2-23
 *
 ***************************************
@@ -94,7 +94,7 @@ inline ZIni::ZIni(const char *filePath)
 
 	std::string mainKey(""), subKey(""), subValue("");
 	std::map<std::string, std::string> subMap;
-	std::string::size_type lastLineBreakIndex;  //record the last linebreak position£¬for traversal only once. when reaching a '=', get the keyname directly by using this index.
+	std::string::size_type lastLineBreakIndex;  //record the last linebreak positionÂ£Â¬for traversal only once. when reaching a '=', get the keyname directly by using this index.
 	std::string::size_type firstValidIndex = filestring.find_first_of('[');
 	auto i = firstValidIndex;
 	while (i < filestring.length())
