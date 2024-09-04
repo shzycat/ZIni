@@ -1,18 +1,9 @@
-/*  ZIni: A Real Crude Cross-Platform Ini-File-Reader Written by C++
-*
-*   version  :  v0.1.1
-*   Author   :  SHZY
-*   Email    :  1816030@qq.com
-*   now-time :  2022-2-23
-*
-***************************************
-*
-*   Happy Using!
-*
+/*
+* Written by shzy.
+* Happy for using.
 */
 
-#ifndef __INI_H__
-#define __INI_H__
+#pragma once
 
 #include <map>
 #include <string>
@@ -94,11 +85,14 @@ inline ZIni::ZIni(const char *filePath)
 
 	std::string mainKey(""), subKey(""), subValue("");
 	std::map<std::string, std::string> subMap;
-	std::string::size_type lastLineBreakIndex;  //record the last linebreak position£¬for traversal only once. when reaching a '=', get the keyname directly by using this index.
+	std::string::size_type lastLineBreakIndex;  //record the last linebreak position，for traversal only once. when reaching a '=', get the keyname directly by using this index.
 	std::string::size_type firstValidIndex = filestring.find_first_of('[');
 	auto i = firstValidIndex;
 	while (i < filestring.length())
 	{
+		std::string temp_buf{};
+		bool isLastLine{false};
+
 		switch (filestring[i])
 		{
 		case '[':
@@ -135,9 +129,9 @@ inline ZIni::ZIni(const char *filePath)
 			lastLineBreakIndex = i;
 			break;
 		case '=':
-			std::string buf(filestring, lastLineBreakIndex + 1, i - lastLineBreakIndex - 1);
-			subKey = std::move(buf);
-			bool isLastLine = true; //tell if reaching the last line of this file.(note: even if this value is false, doesn't mean this line is definitely not the last line)
+			temp_buf.assign(filestring, lastLineBreakIndex + 1, i - lastLineBreakIndex - 1);
+			subKey = std::move(temp_buf);
+			isLastLine = true; //tell if reaching the last line of this file.
 			for (auto j = i + 1; j < filestring.length(); ++j)
 			{
 				if (filestring[j] == '\n')
@@ -161,6 +155,8 @@ inline ZIni::ZIni(const char *filePath)
 			}
 			subKey.clear();
 			subValue.clear();
+			break;
+		default:
 			break;
 		}
 		i++;
@@ -472,4 +468,3 @@ inline bool ZIni::writeIntoFile()
 }
 
 
-#endif
